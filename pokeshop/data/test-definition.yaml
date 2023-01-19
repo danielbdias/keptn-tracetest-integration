@@ -1,8 +1,8 @@
 type: Test
 spec:
   id: apdCx-h4g
-  name: Pokeshop - List Pokemons
-  description: Get a Pokemon
+  name: Keptn Test / Pokeshop - List Pokemons
+  description: List Pokemons in API and check if it respects a SLO
   trigger:
     type: http
     httpRequest:
@@ -12,6 +12,10 @@ spec:
       - key: Content-Type
         value: application/json
   specs:
-  - selector: span[name = “Tracetest trigger”]
-    assertions:
+  - selector: span[tracetest.span.type="general" name="Tracetest trigger"]
+    assertions: # checks SLO
     - attr:tracetest.span.duration < 500ms
+  - selector: span[tracetest.span.type="http" name="GET /pokemon?take=20&skip=0" http.method="GET"]
+    assertions: # checks if API gave a valid response
+    - attr:http.status_code = 200
+    - attr:http.response.body contains '"id":1'
